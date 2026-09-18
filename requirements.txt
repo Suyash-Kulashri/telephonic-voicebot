@@ -1,0 +1,8 @@
+livekit-agents[silero,turn-detector]~=1.0
+livekit-plugins-openai
+python-dotenv
+faster-whisper
+httpx
+sentence-transformers
+qdrant-client
+piper-tts
