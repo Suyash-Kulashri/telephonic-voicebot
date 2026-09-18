@@ -23,28 +23,40 @@ If you don't have a GPU, that's fine for proving the pipeline works — just use
 
 ## 1. Project Structure
 
-Set this up first so every later step has a home:
+Set this up first so every later step has a home. This guide follows a **flat layout** — everything lives directly in the project root, one shared `.venv` and one `requirements.txt` for the whole project (no separate `agent/` subfolder):
 
 ```
-voicebot-poc/
-├── docker-compose.yml          # LiveKit server, Qdrant, Ollama
-├── livekit.yaml                 # LiveKit server config
-├── agent/
-│   ├── main.py                  # The LiveKit agent entrypoint
-│   ├── stt.py                   # Whisper wrapper
-│   ├── llm.py                   # Ollama wrapper + RAG hook
-│   ├── tts.py                   # Piper/XTTS wrapper
-│   ├── rag.py                   # Embedding + retrieval logic
-│   └── requirements.txt
-├── knowledge_base/              # Sample docs for RAG
+telephonic-voicebot/
+├── .venv/                       # Single project-wide virtual environment
+├── .gitignore
+├── requirements.txt              # All Python deps for the whole POC
+├── docker-compose.yml            # LiveKit server, Qdrant, Ollama
+├── livekit.yaml                  # LiveKit server config
+├── main.py                       # The LiveKit agent entrypoint
+├── stt.py                        # Whisper wrapper
+├── llm.py                        # Ollama wrapper + RAG hook
+├── tts.py                        # Piper/XTTS wrapper
+├── rag.py                        # Embedding + retrieval logic
+├── knowledge_base/               # Sample docs for RAG
 │   └── faq.md
-└── web-client/                  # Minimal LiveKit React test client
+├── web-client/                   # Minimal LiveKit React test client
+└── AI_Voicebot_POC_Build_Guide.md
 ```
 
 ```bash
-mkdir -p voicebot-poc/agent voicebot-poc/knowledge_base
-cd voicebot-poc
+mkdir telephonic-voicebot
+cd telephonic-voicebot
 git init
+python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+```
+
+A `.gitignore` at the root should at minimum include:
+```
+.venv/
+__pycache__/
+*.wav
+.env
 ```
 
 ---
@@ -95,14 +107,25 @@ curl http://localhost:7880
 
 ## 3. Step 2 — Python Agent Environment
 
-```bash
-cd agent
-python3 -m venv venv
-source venv/bin/activate
-pip install "livekit-agents[silero,turn-detector]~=1.0" livekit-plugins-openai python-dotenv
+The `.venv` and `requirements.txt` at the project root cover every step below — you won't create per-step virtual environments.
+
+**`requirements.txt`** (root of `telephonic-voicebot/`) — build this up as you go, or seed it now with everything you'll need across the whole POC:
+```
+livekit-agents[silero,turn-detector]~=1.0
+livekit-plugins-openai
+python-dotenv
+faster-whisper
+httpx
+sentence-transformers
+qdrant-client
+piper-tts
 ```
 
-**`.env`** (in `agent/`):
+```bash
+pip install -r requirements.txt
+```
+
+**`.env`** (project root):
 ```
 LIVEKIT_URL=ws://localhost:7880
 LIVEKIT_API_KEY=devkey
