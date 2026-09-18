@@ -1,0 +1,29 @@
+ ==========================================
+# Environment Variables and Secrets (Crucial!)
+# ==========================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+
+
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ==========================================
+# Virtual Environments (Python)
+# ==========================================
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+pip-selfcheck.json
+.Python
